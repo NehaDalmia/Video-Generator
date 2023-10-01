@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Interactive JSON Textbox</title>
+    <style>
+        /* Style for the interactive textbox */
+        #json-textbox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: monospace;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Interactive JSON Textbox</h2>
+    <div id="json-textbox" contenteditable="true">[{ 'type': 'dynamic','color': 'red','shape': 'sphere','material':'aluminium_clean','acceleration': '5'}]</div>
+
+    <script>
+        const jsonTextbox = document.getElementById('json-textbox');
+
+        // Store the initial JSON object
+        const initialJSON = "{ 'type': '', 'color': '', 'shape': '', 'material': '', 'acceleration': ''}";
+
+        jsonTextbox.addEventListener('input', function () {
+            // Check if the input contains a comma after the closing curly bracket
+            const text = jsonTextbox.textContent;
+            const lastCommaIndex = text.lastIndexOf('},');
+            if (lastCommaIndex !== -1) {
+                // Get the current cursor position
+                const cursorPosition = window.getSelection().getRangeAt(0).startOffset;
+
+                // Remove the last closing square bracket
+                const updatedText = text.slice(0, -2);
+                // Add the initial JSON data followed by a comma and a closing square bracket
+                jsonTextbox.innerHTML = `${updatedText},${initialJSON}]`;
+
+                // Restore the cursor position
+                const range = document.createRange();
+                range.setStart(jsonTextbox.childNodes[0], cursorPosition);
+                range.collapse(true);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+        });
+    </script>
+</body>
+
+</html>

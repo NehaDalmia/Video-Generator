@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <title>Examples!</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #007bff;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .example-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        /* CSS for the example heading and copy button */
+        .example-heading {
+            display: inline-block;
+            /* Display as inline-block to stay on the same line */
+            margin-right: 4px;
+            /* Adjust the spacing between the heading and button */
+        }
+
+        .copy-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 3px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+
+        .example {
+            background-color: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            border-radius: 5px;
+            width: calc(45% - 20px);
+            /* 50% width with margins accounted for */
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .example:hover {
+            background-color: #007bff;
+            color: white;
+            /* Light blue background on hover */
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 60%;
+            height: 100%;
+            /* Fixed height for modal content */
+            overflow-y: auto;
+
+            /* Enable scrolling if content exceeds the fixed height */
+        }
+
+        .close-btn {
+            float: right;
+            cursor: pointer;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            /* Maintain image aspect ratio */
+            max-height: 400px;
+        }
+
+        pre {
+            text-align: left;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <h1>Examples! </h1>
+    </div>
+
+    <div class="example-container">
+        <!-- Example 1 -->
+        <div class="example" onclick="openModal('modal1')">
+            <h2>Example 1 - Dynamic and Static</h2>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_1.gif">
+        </div>
+
+        <!-- Example 2 -->
+        <div class="example" onclick="openModal('modal2')">
+            <h2>Example 2 - Dynamic and Static</h2>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_2.gif">
+        </div>
+
+        <!-- Example 3 -->
+        <div class="example" onclick="openModal('modal3')">
+            <h2>Example 3 - All Static </h2>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_3.gif">
+        </div>
+
+        <!-- Example 4 -->
+        <div class="example" onclick="openModal('modal4')">
+            <h2>Example 4 - All Dynamic</h2>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_4.gif">
+        </div>
+    </div>
+
+    <!-- Modal 1 -->
+    <div id="modal1" class="modal" onclick="closeModal('modal1')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('modal1')">&times;</span>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_1.gif">
+            <h2 class="example-heading">Example 1</h2>
+            <button class="copy-button" onclick="copyJson('example-1')"><i class="fas fa-copy"></i></button>
+            <pre><code id="example-1"></code></pre>
+
+        </div>
+    </div>
+
+    <!-- Modal 2 -->
+    <div id="modal2" class="modal" onclick="closeModal('modal2')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('modal2')">&times;</span>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_2.gif">
+            <h2 class="example-heading">Example 2</h2>
+            <button class="copy-button" onclick="copyJson('example-2')"><i class="fas fa-copy"></i></button>
+            <pre id="example-2">
+                <!-- Insert JSON content for Example 2 here -->
+            </pre>
+        </div>
+    </div>
+
+    <!-- Modal 3 -->
+    <div id="modal3" class="modal" onclick="closeModal('modal3')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('modal3')">&times;</span>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_3.gif">
+            <h2 class="example-heading">Example 3</h2>
+            <button class="copy-button" onclick="copyJson('example-3')"><i class="fas fa-copy"></i></button>
+            <pre id="example-3">
+                <!-- Insert JSON content for Example 3 here -->
+            </pre>
+        </div>
+    </div>
+
+    <!-- Modal 4 -->
+    <div id="modal4" class="modal" onclick="closeModal('modal4')">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('modal4')">&times;</span>
+            <img src="https://ik.imagekit.io/videocreator/Permanent%20Videos/example_4.gif">
+            <h2 class="example-heading">Example 4</h2>
+            <button class="copy-button" onclick="copyJson('example-4')"><i class="fas fa-copy"></i></button>
+            <pre id="example-4">
+                <!-- Insert JSON content for Example 4 here -->
+            </pre>
+        </div>
+    </div>
+
+    <script>
+
+        if (!library)
+            var library = {};
+
+        library.json = {
+            replacer: function (match, pIndent, pKey, pVal, pEnd) {
+                var key = '<span class=json-key>';
+                var val = '<span class=json-value>';
+                var str = '<span class=json-string>';
+                var r = pIndent || '';
+                if (pKey)
+                    r = r + key + '"' + pKey.replace(/[": ]/g, '') + '"' + '</span>: ';
+                if (pVal)
+                    r = r + (pVal[0] == '"' ? str : val) + pVal + '</span>';
+                return r + (pEnd || '');
+            },
+            prettyPrint: function (obj) {
+                var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
+                return JSON.stringify(obj, null, 3)
+                    .replace(/&/g, '&amp;').replace(/\\"/g, '&quot;')
+                    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(jsonLine, library.json.replacer);
+            }
+        };
+
+        var json_1 = [{ 'object_no': 1, 'type': 'static', 'color': 'red', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 2, 'type': 'dynamic', 'color': 'blue', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '20' }, { 'object_no': 3, 'type': 'dynamic', 'color': 'green', 'shape': 'sphere', 'material': 'cardboard_paper', 'acceleration': '30' }, { 'object_no': 4, 'type': 'static', 'color': 'blue', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 5, 'type': 'static', 'color': 'blue', 'shape': 'cylinder', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 6, 'type': 'static', 'color': 'green', 'shape': 'sphere', 'material': 'cardboard_paper', 'acceleration': '' }, { 'object_no': 7, 'type': 'dynamic', 'color': 'red', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '20' }, { 'object_no': 8, 'type': 'dynamic', 'color': 'red', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '15' }];
+        document.getElementById("example-1").innerHTML = library.json.prettyPrint(json_1);
+
+        var json_2 = [{ 'object_no': 1, 'type': 'static', 'color': 'red', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 2, 'type': 'dynamic', 'color': 'blue', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '20' }, { 'object_no': 3, 'type': 'dynamic', 'color': 'green', 'shape': 'sphere', 'material': 'cardboard_paper', 'acceleration': '30' }, { 'object_no': 4, 'type': 'static', 'color': 'blue', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 5, 'type': 'static', 'color': 'blue', 'shape': 'cylinder', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 6, 'type': 'static', 'color': 'green', 'shape': 'cube', 'material': 'cardboard_paper', 'acceleration': '' }, { 'object_no': 7, 'type': 'dynamic', 'color': 'red', 'shape': 'cylinder', 'material': 'aluminium_clean', 'acceleration': '20' }, { 'object_no': 8, 'type': 'dynamic', 'color': 'red', 'shape': 'cube', 'material': 'aluminium_clean', 'acceleration': '15' }];
+        document.getElementById("example-2").innerHTML = library.json.prettyPrint(json_2);
+
+        var json_3 = [{ 'object_no': 1, 'type': 'static', 'color': 'red', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 2, 'type': 'static', 'color': 'blue', 'shape': 'sphere', 'material': 'cardboard_paper', 'acceleration': '' }, { 'object_no': 3, 'type': 'static', 'color': 'green', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 4, 'type': 'static', 'color': 'red', 'shape': 'cube', 'material': 'cardboard_paper', 'acceleration': '' }, { 'object_no': 5, 'type': 'static', 'color': 'blue', 'shape': 'cube', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 6, 'type': 'static', 'color': 'green', 'shape': 'cube', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 7, 'type': 'static', 'color': 'blue', 'shape': 'cylinder', 'material': 'aluminium_clean', 'acceleration': '' }, { 'object_no': 8, 'type': 'static', 'color': 'red', 'shape': 'cylinder', 'material': 'cardboard_paper', 'acceleration': '' }, { 'object_no': 9, 'type': 'static', 'color': 'green', 'shape': 'cylinder', 'material': 'cardboard_paper', 'acceleration': '' }];
+        document.getElementById("example-3").innerHTML = library.json.prettyPrint(json_3);
+
+        var json_4 = [{ 'object_no': 1, 'type': 'dynamic', 'color': 'red', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '5' }, { 'object_no': 2, 'type': 'dynamic', 'color': 'blue', 'shape': 'sphere', 'material': 'cardboard_paper', 'acceleration': '10' }, { 'object_no': 3, 'type': 'dynamic', 'color': 'green', 'shape': 'sphere', 'material': 'aluminium_clean', 'acceleration': '15' }, { 'object_no': 4, 'type': 'dynamic', 'color': 'red', 'shape': 'cube', 'material': 'cardboard_paper', 'acceleration': '13' }, { 'object_no': 5, 'type': 'dynamic', 'color': 'blue', 'shape': 'cube', 'material': 'aluminium_clean', 'acceleration': '12' }, { 'object_no': 6, 'type': 'dynamic', 'color': 'green', 'shape': 'cube', 'material': 'aluminium_clean', 'acceleration': '8' }, { 'object_no': 7, 'type': 'dynamic', 'color': 'blue', 'shape': 'cylinder', 'material': 'aluminium_clean', 'acceleration': '20' }, { 'object_no': 8, 'type': 'dynamic', 'color': 'red', 'shape': 'cylinder', 'material': 'cardboard_paper', 'acceleration': '24' }, { 'object_no': 9, 'type': 'dynamic', 'color': 'green', 'shape': 'cylinder', 'material': 'cardboard_paper', 'acceleration': '30' }];
+        document.getElementById("example-4").innerHTML = library.json.prettyPrint(json_4);
+
+        // Function to open the modal
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = "block";
+        }
+
+        // Function to close the modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = "none";
+        }
+
+        // Function to copy JSON content to clipboard
+        function copyJson(elementId) {
+            // Select the JSON content
+            const jsonContent = document.getElementById(elementId);
+
+            // Create a range and select the text
+            const range = document.createRange();
+            range.selectNode(jsonContent);
+            window.getSelection().removeAllRanges(); // Clear previous selections
+            window.getSelection().addRange(range);
+
+            try {
+                // Execute the copy command
+                document.execCommand('copy');
+                alert('JSON content copied to clipboard!');
+            } catch (err) {
+                console.error('Unable to copy JSON content: ', err);
+            } finally {
+                // Clear the selection
+                window.getSelection().removeAllRanges();
+            }
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Video Generator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Reset some default styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            position: relative;
+            /* Add this to make the button positioning relative to the body */
+        }
+
+        /* Container for the content */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        /* Title style */
+        .title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Form style */
+        .object-form {
+            text-align: left;
+        }
+
+        /* Style for the interactive textbox */
+        #json-textbox-container {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            /* Adjust this value as needed */
+        }
+
+        #json-textbox {
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: monospace;
+            min-height: 100px;
+            white-space: pre-wrap;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        /* Form input style */
+        .form-input {
+            margin-bottom: 10px;
+        }
+
+        /* Button style */
+        .add-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* JSON display style */
+        .json-display {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        /* Reset button style */
+        .reset-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff0000;
+            /* Red color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .examples-button {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #FFC300;
+            /* Red color */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Random button style */
+        .random-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #FFC300;
+            /* Yellow color */
+            color: #fff;
+            /* Black text color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Text button style */
+        .text-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #8FFF00;
+            /* Yellow color */
+            color: #fff;
+            /* Black text color */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Question mark icon style */
+        .question-mark {
+            font-size: 24px;
+            color: #007bff;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+
+        /* Rules modal style */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .close {
+            color: #888;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">Video Generator</h1>
+        <!-- Add the RESET button -->
+        <button class="reset-button" type="button" id="reset-button"><i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+        <!-- Examples Button -->
+        <button class="examples-button" type="button" id="examples-button">Examples</button>
+
+        <div class="video-container">
+            <iframe id="generated-video" width="640" height="360"></iframe>
+            <!-- Add a Download button -->
+            <a id="download-button" class="download-button" style="display: none;" download>Download Video</a>
+            <br>
+            <!-- Generate JSON Data Button -->
+            <button class="add-button" type="button" id="generate-json">Generate Video <i
+                    class="fa-solid fa-wand-magic-sparkles"></i></button>
+            <!-- Loading spinner (initially hidden) -->
+            <!-- <div class="loading-spinner" id="loading-spinner"></div> -->
+            <div class="loader" id="loading-spinner"></div>
+        </div>
+        <div id="json-textbox-container">
+            <div id="json-textbox" contenteditable="true">[{"type":"dynamic","color":"red","shape":"sphere","material":"aluminium_clean","acceleration": "5"}]</div>
+            <span class="question-mark" id="rules-button"><i class="fa-solid fa-question"></i></span>
+        </div>
+        <br>
+        <form id="object-form" class="object-form">
+            <!-- Container for added objects -->
+            <div id="added-objects-container"></div>
+
+            <!-- Add Object Button -->
+            <button class="add-button" type="button" id="add-object">Add Object</button>
+            <!-- Add Random Button -->
+            <button class="random-button" type="button" id="add-object-random">Random</button>
+            <!-- Add from Text Button -->
+            <button class="text-button" type="button" id="add-object-text">Add From Text</button>
+        </form>
+
+        <!-- JSON Data Display -->
+        <div class="json-display" id="json-display"></div>
+
+        <!-- Rules Modal -->
+        <div class="modal" id="rules-modal">
+            <div class="modal-content">
+                <span class="close" id="close-rules-modal">&times;</span>
+                <h2>Rules</h2>
+                <ul style="list-style-type: none; padding-left: 0;">
+                    <li>Colour should be <b style="color: red">red</b>, <b style="color: blue">blue</b>, or <b
+                            style="color: green">green</b>.</li>
+                    <li>Type should be <b>static</b> or <b>dynamic</b>.</li>
+                    <li>Material should be <b>cardboard_paper</b> or <b>aluminium_clean</b>.</li>
+                    <li>Shape should be <b>cube</b>, <b>cylinder</b>, or <b>sphere</b>.</li>
+                    <li>Acceleration for <b>static</b> objects should be <b>empty</b>.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="https://kit.fontawesome.com/c6751adc48.js" crossorigin="anonymous"></script>
+    <script>
+        // Function to display the loading spinner
+        function showLoadingSpinner() {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            loadingSpinner.style.display = 'inline-block';
+        }
+
+        // Function to hide the loading spinner
+        function hideLoadingSpinner() {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            loadingSpinner.style.display = 'none';
+        }
+
+        // Function to update the video source and link
+        function updateVideoSource(videoUrl) {
+            const video = document.getElementById('generated-video');
+            const videoLink = document.getElementById('video-link');
+            const downloadButton = document.getElementById('download-button');
+            video.src = videoUrl;
+            // video.load(); // Load the new source
+
+            // Update the link href and text
+            videoLink.href = videoUrl;
+            downloadButton.href = videoUrl; // Set the href attribute of the download button
+            downloadButton.style.display = 'block'; // Display the download button
+        }
+
+        // Function to reset the page
+        function resetPage() {
+            location.reload(); // Reload the page
+        }
+
+        // Initialize object counter
+        let objectCounter = 1;
+
+        // Function to add a new object input fields
+        function addObject() {
+            // Create a new container for the object
+            const objectContainer = document.createElement('div');
+            objectContainer.classList.add('form-input');
+
+            // Object Type (Static/Dynamic Dropdown)
+            const objectTypeSelect = document.createElement('select');
+            objectTypeSelect.name = `object-type-${objectCounter}`;
+            objectTypeSelect.innerHTML = `
+                <option value="static">Static</option>
+                <option value="dynamic">Dynamic</option>
+            `;
+            objectContainer.appendChild(objectTypeSelect);
+
+            // Object Color Dropdown
+            const objectColorSelect = document.createElement('select');
+            objectColorSelect.name = `object-color-${objectCounter}`;
+            objectColorSelect.innerHTML = `
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+            `;
+            objectContainer.appendChild(objectColorSelect);
+
+            // Object Shape Dropdown
+            const objectShapeSelect = document.createElement('select');
+            objectShapeSelect.name = `object-shape-${objectCounter}`;
+            objectShapeSelect.innerHTML = `
+                <option value="sphere">Sphere</option>
+                <option value="cube">Cube</option>
+                <option value="cylinder">Cylinder</option>
+            `;
+            objectContainer.appendChild(objectShapeSelect);
+
+            // Object Material Dropdown
+            const objectMaterialSelect = document.createElement('select');
+            objectMaterialSelect.name = `object-material-${objectCounter}`;
+            objectMaterialSelect.innerHTML = `
+                <option value="aluminium_clean">aluminium_clean</option>
+                <option value="cardboard_paper">cardboard_paper</option>
+            `;
+            objectContainer.appendChild(objectMaterialSelect);
+
+            // Initial Acceleration (Text Field)
+            const initialAccelerationInput = document.createElement('input');
+            initialAccelerationInput.type = 'text';
+            initialAccelerationInput.name = `initial-acceleration-${objectCounter}`;
+            initialAccelerationInput.placeholder = 'Initial Acceleration';
+            initialAccelerationInput.style.display = 'none';
+            objectContainer.appendChild(initialAccelerationInput);
+
+            // Add the object container to the added objects container
+            const addedObjectsContainer = document.getElementById('added-objects-container');
+            addedObjectsContainer.appendChild(objectContainer);
+
+            // Increment object counter
+            objectCounter++;
+
+            // Add an event listener to the object type select to toggle the visibility of the acceleration input
+            objectTypeSelect.addEventListener('change', () => {
+                const selectedObjectType = objectTypeSelect.value;
+                initialAccelerationInput.style.display = selectedObjectType === 'dynamic' ? 'block' : 'none';
+            });
+        }
+        function addObjectwithData(type, color, shape, material, acceleration) {
+            // Choose random values for each property
+            const objectType = type;
+            const objectColor = color;
+            const objectShape = shape;
+            const objectMaterial = material;
+            const randomAcceleration = acceleration;
+
+            // Create a new container for the object
+            const objectContainer = document.createElement('div');
+            objectContainer.classList.add('form-input');
+
+            // Object Type (Static/Dynamic Dropdown)
+            const objectTypeSelect = document.createElement('select');
+            objectTypeSelect.name = `object-type-${objectCounter}`;
+            objectTypeSelect.innerHTML = `
+                <option value="static">Static</option>
+                <option value="dynamic">Dynamic</option>
+            `;
+            objectTypeSelect.value = objectType;
+            objectContainer.appendChild(objectTypeSelect);
+
+            // Object Color Dropdown
+            const objectColorSelect = document.createElement('select');
+            objectColorSelect.name = `object-color-${objectCounter}`;
+            objectColorSelect.innerHTML = `
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+            `;
+            objectColorSelect.value = objectColor;
+            objectContainer.appendChild(objectColorSelect);
+
+            // Object Shape Dropdown
+            const objectShapeSelect = document.createElement('select');
+            objectShapeSelect.name = `object-shape-${objectCounter}`;
+            objectShapeSelect.innerHTML = `
+                <option value="sphere">Sphere</option>
+                <option value="cube">Cube</option>
+                <option value="cylinder">Cylinder</option>
+            `;
+            objectShapeSelect.value = objectShape;
+            objectContainer.appendChild(objectShapeSelect);
+
+            // Object Material Dropdown
+            const objectMaterialSelect = document.createElement('select');
+            objectMaterialSelect.name = `object-material-${objectCounter}`;
+            objectMaterialSelect.innerHTML = `
+                <option value="aluminium_clean">aluminium_clean</option>
+                <option value="cardboard_paper">cardboard_paper</option>
+            `;
+            objectMaterialSelect.value = objectMaterial;
+            objectContainer.appendChild(objectMaterialSelect);
+
+            // Initial Acceleration (Text Field)
+            const initialAccelerationInput = document.createElement('input');
+            initialAccelerationInput.type = 'text';
+            initialAccelerationInput.name = `initial-acceleration-${objectCounter}`;
+            initialAccelerationInput.placeholder = 'Initial Acceleration';
+            initialAccelerationInput.style.display = 'none';
+            initialAccelerationInput.value = randomAcceleration;
+            objectContainer.appendChild(initialAccelerationInput);
+
+            // Add the object container to the added objects container
+            const addedObjectsContainer = document.getElementById('added-objects-container');
+            addedObjectsContainer.appendChild(objectContainer);
+
+            // Increment object counter
+            objectCounter++;
+
+            const selectedObjectType = objectTypeSelect.value;
+            if (selectedObjectType === 'dynamic') {
+                initialAccelerationInput.style.display = 'block'; // Display the acceleration input
+            } else {
+                initialAccelerationInput.style.display = 'none'; // Hide the acceleration input
+            }
+
+            // Add an event listener to the object type select to toggle the visibility of the acceleration input
+            objectTypeSelect.addEventListener('change', () => {
+                const selectedObjectType = objectTypeSelect.value;
+                initialAccelerationInput.style.display = selectedObjectType === 'dynamic' ? 'block' : 'none';
+            });
+        }
+
+        function addObjectText() {
+            const jsonTextbox = document.getElementById('json-textbox');
+            const jsonData = jsonTextbox.textContent.replace(/\s/g, ''); // Remove spaces
+            console.log(jsonData);
+
+            try {
+                // Attempt to parse the JSON data
+                const objects = JSON.parse(jsonData);
+
+                if (!Array.isArray(objects)) {
+                    throw new Error('Invalid JSON format. It should be an array of objects.');
+                }
+
+                for (const object of objects) {
+                    // Check if 'color' is valid
+                    if (!['red', 'blue', 'green'].includes(object.color)) {
+                        throw new Error(`Invalid color: ${object.color}`);
+                    }
+
+                    // Check if 'type' is valid
+                    if (!['static', 'dynamic'].includes(object.type)) {
+                        throw new Error(`Invalid type: ${object.type}`);
+                    }
+
+                    // Check if 'shape' is valid
+                    if (!['sphere', 'cube', 'cylinder'].includes(object.shape)) {
+                        throw new Error(`Invalid shape: ${object.shape}`);
+                    }
+
+                    // Check if 'material' is valid
+                    if (!['aluminium_clean', 'cardboard_paper'].includes(object.material)) {
+                        throw new Error(`Invalid material: ${object.material}`);
+                    }
+
+                    // If 'type' is 'static', check if 'acceleration' is empty
+                    if (object.type === 'static' && object.acceleration !== '') {
+                        throw new Error(`Acceleration must be empty for static objects.`);
+                    }
+
+
+                }
+            } catch (error) {
+                // Display an alert for any validation errors
+                alert(`Validation Error: ${error.message}`);
+                return;
+            }
+            
+            const objects = JSON.parse(jsonData);
+            for (const object of objects) {
+                // Add the object using addObjectwithData function
+                addObjectwithData(object.type, object.color, object.shape, object.material, object.acceleration);
+            }
+
+
+        }
+
+        // Function to add a new object input fields with random values
+        function addObjectRandom() {
+            // Define the available options for each property
+            const objectTypes = ['static', 'dynamic'];
+            const objectColors = ['red', 'blue', 'green'];
+            const objectShapes = ['sphere', 'cube', 'cylinder'];
+            const objectMaterials = ['aluminium_clean', 'cardboard_paper'];
+
+            // Choose random values for each property
+            const objectType = objectTypes[Math.floor(Math.random() * objectTypes.length)];
+            const objectColor = objectColors[Math.floor(Math.random() * objectColors.length)];
+            const objectShape = objectShapes[Math.floor(Math.random() * objectShapes.length)];
+            const objectMaterial = objectMaterials[Math.floor(Math.random() * objectMaterials.length)];
+            const randomAcceleration = Math.floor(Math.random() * (100 - 10 + 1)) + 10;
+
+            // Create a new container for the object
+            const objectContainer = document.createElement('div');
+            objectContainer.classList.add('form-input');
+
+            // Object Type (Static/Dynamic Dropdown)
+            const objectTypeSelect = document.createElement('select');
+            objectTypeSelect.name = `object-type-${objectCounter}`;
+            objectTypeSelect.innerHTML = `
+                <option value="static">Static</option>
+                <option value="dynamic">Dynamic</option>
+            `;
+            objectTypeSelect.value = objectType;
+            objectContainer.appendChild(objectTypeSelect);
+
+            // Object Color Dropdown
+            const objectColorSelect = document.createElement('select');
+            objectColorSelect.name = `object-color-${objectCounter}`;
+            objectColorSelect.innerHTML = `
+                <option value="red">Red</option>
+                <option value="blue">Blue</option>
+                <option value="green">Green</option>
+            `;
+            objectColorSelect.value = objectColor;
+            objectContainer.appendChild(objectColorSelect);
+
+            // Object Shape Dropdown
+            const objectShapeSelect = document.createElement('select');
+            objectShapeSelect.name = `object-shape-${objectCounter}`;
+            objectShapeSelect.innerHTML = `
+                <option value="sphere">Sphere</option>
+                <option value="cube">Cube</option>
+                <option value="cylinder">Cylinder</option>
+            `;
+            objectShapeSelect.value = objectShape;
+            objectContainer.appendChild(objectShapeSelect);
+
+            // Object Material Dropdown
+            const objectMaterialSelect = document.createElement('select');
+            objectMaterialSelect.name = `object-material-${objectCounter}`;
+            objectMaterialSelect.innerHTML = `
+                <option value="aluminium_clean">aluminium_clean</option>
+                <option value="cardboard_paper">cardboard_paper</option>
+            `;
+            objectMaterialSelect.value = objectMaterial;
+            objectContainer.appendChild(objectMaterialSelect);
+
+            // Initial Acceleration (Text Field)
+            const initialAccelerationInput = document.createElement('input');
+            initialAccelerationInput.type = 'text';
+            initialAccelerationInput.name = `initial-acceleration-${objectCounter}`;
+            initialAccelerationInput.placeholder = 'Initial Acceleration';
+            initialAccelerationInput.style.display = 'none';
+            initialAccelerationInput.value = randomAcceleration;
+            objectContainer.appendChild(initialAccelerationInput);
+
+            // Add the object container to the added objects container
+            const addedObjectsContainer = document.getElementById('added-objects-container');
+            addedObjectsContainer.appendChild(objectContainer);
+
+            // Increment object counter
+            objectCounter++;
+
+            const selectedObjectType = objectTypeSelect.value;
+            if (selectedObjectType === 'dynamic') {
+                initialAccelerationInput.style.display = 'block'; // Display the acceleration input
+            } else {
+                initialAccelerationInput.style.display = 'none'; // Hide the acceleration input
+            }
+
+            // Add an event listener to the object type select to toggle the visibility of the acceleration input
+            objectTypeSelect.addEventListener('change', () => {
+                const selectedObjectType = objectTypeSelect.value;
+                initialAccelerationInput.style.display = selectedObjectType === 'dynamic' ? 'block' : 'none';
+            });
+        }
+
+        // Add Object Button Click Event
+        document.getElementById('add-object').addEventListener('click', addObject);
+
+        // Examples Button Click Event
+        document.getElementById('examples-button').addEventListener('click', function () {
+            // Redirect to the "/examples" URL
+            window.location.href = '/examples';
+        });
+
+        // Add Random Button Click Event
+        document.getElementById('add-object-random').addEventListener('click', addObjectRandom);
+
+        // Add Text Button Click Event
+        document.getElementById('add-object-text').addEventListener('click', addObjectText);
+
+        // Generate JSON Data Button Click Event
+        document.getElementById('generate-json').addEventListener('click', generateJSONData);
+
+        // Reset Button Click Event
+        document.getElementById('reset-button').addEventListener('click', resetPage);
+
+        // Function to generate combined JSON data
+        function generateJSONData() {
+            showLoadingSpinner();
+            const objects = [];
+            // Loop through added objects
+            for (let i = 1; i < objectCounter; i++) {
+                const objectType = document.querySelector(`[name="object-type-${i}"]`).value;
+                const objectColor = document.querySelector(`[name="object-color-${i}"]`).value;
+                const objectShape = document.querySelector(`[name="object-shape-${i}"]`).value;
+                const objectMaterial = document.querySelector(`[name="object-material-${i}"]`).value;
+                const initialAccelerationInput = document.querySelector(`[name="initial-acceleration-${i}"]`);
+                const initialAcceleration = objectType === 'dynamic' ? initialAccelerationInput.value : '';
+                // Create an object
+                const object = {
+                    object_no: i,
+                    type: objectType,
+                    color: objectColor,
+                    shape: objectShape,
+                    material: objectMaterial,
+                    acceleration: initialAcceleration
+                };
+                objects.push(object);
+            }
+            // Display JSON data
+            const jsonDataDisplay = document.getElementById('json-display');
+            // Convert the objects to a JSON string
+            const jsonData = JSON.stringify(objects, null, 2);
+            // Create a FormData object
+            const formData = new FormData();
+            // Append the JSON data as a blob
+            formData.append('json', new Blob([jsonData], { type: 'application/json' }));
+            console.log(JSON.stringify(objects, null, 2));
+            fetch('/generate_video', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type to JSON
+                },
+                body: JSON.stringify(objects, null, 2), // Your JSON data here
+            })
+                .then(response => response.json())
+                .then(data => {
+                    hideLoadingSpinner();
+                    // data.video_url = "https://www.youtube.com/embed/H3QLOMcYNgM"
+                    console.log(data.video_url)
+                    if (data.video_url) {
+                        updateVideoSource(data.video_url);
+                    }
+                })
+                .catch(error => {
+                    hideLoadingSpinner();
+                    console.error(error)
+                });
+            // jsonDataDisplay.textContent = JSON.stringify(objects, null, 2);
+        }
+
+        const jsonTextbox = document.getElementById('json-textbox');
+
+        // Store the initial JSON object
+        const initialJSON = "{ \"type\": \"\", \"color\": \"\", \"shape\": \"\", \"material\": \"\", \"acceleration\": \"\"}";
+
+        jsonTextbox.addEventListener('input', function () {
+            // Check if the input contains a comma after the closing curly bracket
+            const text = jsonTextbox.textContent;
+            const lastCommaIndex = text.lastIndexOf('},]');
+            if ((lastCommaIndex !== -1 || event.data === ',') && event.inputType !== 'deleteContentBackward') {
+                // Get the current cursor position
+                const cursorPosition = window.getSelection().getRangeAt(0).startOffset;
+
+                // Remove the last closing square bracket
+                const updatedText = text.slice(0, -2);
+                // Add the initial JSON data followed by a comma and a closing square bracket
+                jsonTextbox.innerHTML = `${updatedText},${initialJSON}]`;
+
+                // Restore the cursor position
+                const range = new Range();
+                const sel = window.getSelection();
+                range.setStart(jsonTextbox.childNodes[0], cursorPosition);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+        });
+
+        // Question mark icon click event
+        document.getElementById('rules-button').addEventListener('click', function () {
+            const rulesModal = document.getElementById('rules-modal');
+            rulesModal.style.display = 'block';
+        });
+
+        // Close the rules modal when clicking the close button
+        document.getElementById('close-rules-modal').addEventListener('click', function () {
+            const rulesModal = document.getElementById('rules-modal');
+            rulesModal.style.display = 'none';
+        });
+
+        // Close the rules modal when clicking outside of it
+        window.addEventListener('click', function (event) {
+            const rulesModal = document.getElementById('rules-modal');
+            if (event.target === rulesModal) {
+                rulesModal.style.display = 'none';
+            }
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,110 @@
+/* Reset some default styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+/* Container for the content */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    text-align: center;
+}
+
+/* Title style */
+.title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Button style */
+.generate-button {
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.generate-button:hover {
+    background-color: #0056b3;
+}
+
+/* Video container style */
+.video-container {
+    margin-top: 20px;
+}
+
+/* Add this CSS code to your existing styles */
+/* Style for the object container */
+.form-input {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+/* Style for individual input fields */
+.form-input select,
+.form-input input {
+    flex: 1;
+    margin-right: 10px;
+}
+
+/* Add CSS for the loading spinner */
+.loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.3);
+    /* Border width and color */
+    border-top: 4px solid #007bff;
+    /* Color of the loading spinner */
+    border-radius: 50%;
+    /* Create a circular loading spinner */
+    width: 20px;
+    /* Set the width and height to control the size */
+    height: 20px;
+    animation: spin 100s linear infinite;
+    /* Apply a spinning animation */
+    display: none;
+    /* Initially hidden */
+}
+
+/* Define the spinning animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loader {
+    border: 4px solid #f3f3f3;
+    /* Light grey */
+    border-top: 4px solid #3498db;
+    /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+    display: none;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
