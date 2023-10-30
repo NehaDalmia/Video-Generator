@@ -13,7 +13,9 @@ import subprocess
 import imagekitio
 import logging
 import os
+import subprocess
 import uuid
+import psutil
 from src.utils import pybullet_simulation, recreate
 
 
@@ -24,6 +26,26 @@ imagekit = imagekitio.ImageKit(
     url_endpoint=app.config["URL"],
 )
 
+def kill_process_tree(pid):
+    try:
+        parent = psutil.Process(pid)
+        children = parent.children(recursive=True)
+        
+        # Print child PIDs before terminating
+        logging.error("Child PIDs:")
+        for child in children:
+            logging.error(child.pid)
+            os.kill(child.pid,15)
+            
+        # for child in children:
+        #     child.terminate()  # Terminate child processes
+
+        psutil.wait_procs(children, timeout=5)  # Wait for child processes to terminate
+
+        parent.terminate()  # Terminate the parent process
+        parent.wait(5)  # Wait for the parent process to terminate
+    except psutil.NoSuchProcess:
+        pass
 
 @app.route("/")
 def index():
@@ -41,8 +63,24 @@ def render_box():
 
 @app.route("/generate_video", methods=["POST", "GET"])
 def generate_video():
-    video_url = None
     
+    
+    # Start the tdw port 
+    
+    # Set the command to run
+    command = "DISPLAY=:0 ./TDW.x86_64 -port=1071 -force-glcore42"
+    # Set the working directory
+    working_directory = os.path.expanduser("~/tdw_build/TDW")
+    # Run the command in the background
+    process = subprocess.Popen(command, shell=True, cwd=working_directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # Get the PID of the process
+    pid = process.pid
+    # Print the PID
+    logging.error(f"TDW Process PID: {pid}")
+    
+    
+
+    video_url = None
     # unique id for request
     uuid_string = str(uuid.uuid4())
     json_data = request.get_json()
@@ -65,6 +103,9 @@ def generate_video():
     os.remove(output_filename)
     os.remove(video_path)
     
+    # Destroy the existing port! 
+    kill_process_tree(pid)
+        
     return jsonify({"video_url": video_url})
 
 

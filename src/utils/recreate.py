@@ -6,6 +6,7 @@ from tdw.output_data import OutputData, Bounds, Images
 from tdw.librarian import ModelLibrarian
 import tdw.output_data as output_data
 import shutil
+import cv2
 
 
 # from tdw.collisions import Collisions
@@ -16,9 +17,16 @@ import pandas as pd
 import numpy as np
 import json
 import subprocess
+import os
+
+
+
+
+
 
 import argparse
 
+port = 1071 # This is the default port. You can change this.
 # parser = argparse.ArgumentParser(description="Few required data generation parameters")
 # parser.add_argument(
 #     "-jold",
@@ -246,8 +254,24 @@ def render(data_path, uuid_string=""):
     c.communicate({"$type": "terminate"})
 
     # Directory containing the input image files (*.png)
-    input_directory = f"src/static/dist_{uuid_string}"
+    input_directory = f"src/static/dist_{uuid_string}" 
+    # List all PNG files in the input directory
+    image_files = [f for f in os.listdir(input_directory) if f.lower().endswith('.png')]
 
+    for image_file in image_files:
+        # Read the image
+        image_path = os.path.join(input_directory, image_file)
+        image = cv2.imread(image_path)
+
+        if image is not None:
+            # Flip the image vertically (along the x-axis)
+            flipped_image = cv2.flip(image, 0)
+
+            # Save the flipped image to the output directory
+            cv2.imwrite(image_path, flipped_image)
+            
+        else:
+            print(f"Failed to read image: {image_path}")
     # Output video file name
     output_video = f"src/static/output_{uuid_string}.mp4"
 
